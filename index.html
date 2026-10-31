@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fun English Class</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: single-column kid-friendly learning app with topic tabs and interactive cards */
+:root {
+  --bg: #fffdf7;
+  --fg: #2d3436;
+  --fg-soft: #636e72;
+  --surface: #ffffff;
+  --border: #e8e4dc;
+  --green: #00b894;
+  --green-soft: #e6f9f3;
+  --purple: #6c5ce7;
+  --purple-soft: #ede8ff;
+  --orange: #e17055;
+  --orange-soft: #fff0eb;
+  --yellow: #fdcb6e;
+  --yellow-soft: #fff9e6;
+  --blue: #0984e3;
+  --blue-soft: #e8f4fd;
+  --red: #d63031;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --radius: 16px;
+  --font-display: 'Fredoka', 'Comic Sans MS', cursive;
+  --font-body: 'Nunito', 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1a1a2e;
+    --fg: #eaeaea;
+    --fg-soft: #a0a0b0;
+    --surface: #242442;
+    --border: #363654;
+    --green-soft: #0a2e24;
+    --purple-soft: #1e1a3a;
+    --orange-soft: #2e1a14;
+    --yellow-soft: #2e2810;
+    --blue-soft: #0e1e2e;
+    --shadow: 0 2px 12px rgba(0,0,0,0.3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1a1a2e;
+  --fg: #eaeaea;
+  --fg-soft: #a0a0b0;
+  --surface: #242442;
+  --border: #363654;
+  --green-soft: #0a2e24;
+  --purple-soft: #1e1a3a;
+  --orange-soft: #2e1a14;
+  --yellow-soft: #2e2810;
+  --blue-soft: #0e1e2e;
+  --shadow: 0 2px 12px rgba(0,0,0,0.3);
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 20px 0 40px;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.header h1 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  text-wrap: balance;
+}
+.header p {
+  font-size: 0.9rem;
+  color: var(--fg-soft);
+  margin: 0;
+}
+.header .level-tag {
+  display: inline-block;
+  background: var(--green);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 3px 14px;
+  border-radius: 20px;
+  margin-top: 8px;
+}
+
+/* Tab Navigation */
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.tab {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 8px;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.25s ease;
+  background: var(--surface);
+  color: var(--fg-soft);
+  border: 2px solid var(--border);
+}
+.tab .tab-icon { font-size: 1.4rem; display: block; margin-bottom: 2px; }
+.tab.active { color: #fff; border-color: transparent; transform: scale(1.03); }
+.tab[data-topic="animals"].active { background: var(--green); }
+.tab[data-topic="school"].active { background: var(--purple); }
+.tab[data-topic="family"].active { background: var(--orange); }
+.tab[data-topic="exercises"].active { background: var(--red); }
+
+/* Topic Sections */
+.topic { display: none; animation: fadeIn 0.3s ease; }
+.topic.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-sub {
+  font-size: 0.85rem;
+  color: var(--fg-soft);
+  margin: 0 0 16px;
+}
+
+/* Flashcards */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+@media (max-width: 440px) { .cards-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.flash-card {
+  background: var(--surface);
+  border: 2.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 8px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.flash-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.flash-card:active { transform: scale(0.97); }
+.flash-card .card-emoji { font-size: 2.6rem; line-height: 1.2; }
+.flash-card .card-word {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-top: 4px;
+}
+.flash-card .card-vn {
+  font-size: 0.75rem;
+  color: var(--fg-soft);
+  margin-top: 1px;
+}
+.flash-card .card-phonetic {
+  font-size: 0.7rem;
+  color: var(--fg-soft);
+  margin-top: 1px;
+  font-style: italic;
+}
+.flash-card.green-border { border-color: var(--green); }
+.flash-card.purple-border { border-color: var(--purple); }
+.flash-card.orange-border { border-color: var(--orange); }
+
+/* Audio button on card */
+.audio-btn {
+  position: absolute;
+  top: 6px; right: 6px;
+  background: none; border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  padding: 2px;
+}
+.audio-btn:hover { opacity: 1; }
+
+/* Pattern Box */
+.pattern-box {
+  background: var(--yellow-soft);
+  border: 2px solid var(--yellow);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin: 16px 0;
+  text-align: center;
+}
+.pattern-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--orange);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+.pattern-text {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+.pattern-text .blank {
+  display: inline-block;
+  border-bottom: 3px solid var(--orange);
+  width: 80px;
+  margin: 0 4px;
+}
+.pattern-example {
+  font-size: 0.8rem;
+  color: var(--fg-soft);
+  margin-top: 6px;
+}
+
+/* Game Box */
+.game-box {
+  background: var(--blue-soft);
+  border: 2px solid var(--blue);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin: 16px 0;
+}
+.game-box h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--blue);
+  margin: 0 0 6px;
+}
+.game-box p {
+  font-size: 0.85rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Interactive Game Area */
+.game-area {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin: 16px 0;
+  text-align: center;
+}
+.game-area h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+.game-prompt {
+  font-size: 3rem;
+  margin: 10px 0;
+}
+.game-question {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 8px 0 16px;
+}
+.game-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+.game-opt {
+  background: var(--surface);
+  border: 2.5px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--fg);
+}
+.game-opt:hover { border-color: var(--blue); background: var(--blue-soft); }
+.game-opt.correct {
+  border-color: var(--green);
+  background: var(--green-soft);
+  animation: pop 0.3s ease;
+}
+.game-opt.wrong {
+  border-color: var(--red);
+  background: #ffe0e0;
+  animation: shake 0.4s ease;
+}
+@keyframes pop { 50% { transform: scale(1.08); } }
+@keyframes shake { 20%,60% { transform: translateX(-4px); } 40%,80% { transform: translateX(4px); } }
+
+.game-score {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: var(--fg-soft);
+  margin-top: 12px;
+}
+.game-score span { color: var(--green); font-weight: 700; }
+
+.next-btn, .restart-btn {
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 28px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: opacity 0.2s;
+}
+.next-btn:hover, .restart-btn:hover { opacity: 0.85; }
+.restart-btn { background: var(--green); }
+
+/* Exercises */
+.exercise-block {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 2px solid var(--border);
+  padding: 16px;
+  margin: 12px 0;
+}
+.exercise-block h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.ex-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+  flex-wrap: wrap;
+}
+.ex-num {
+  background: var(--border);
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 700;
+  flex-shrink: 0;
+}
+.ex-emoji { font-size: 1.8rem; flex-shrink: 0; }
+.ex-input {
+  border: none;
+  border-bottom: 2.5px dashed var(--border);
+  background: transparent;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  width: 120px;
+  color: var(--fg);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.ex-input:focus { border-color: var(--blue); }
+.ex-input.correct-input { border-color: var(--green); color: var(--green); }
+.ex-input.wrong-input { border-color: var(--red); color: var(--red); }
+
+.ex-text { font-size: 0.95rem; }
+
+.check-btn {
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 24px;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: opacity 0.2s;
+  display: block;
+  width: 100%;
+}
+.check-btn:hover { opacity: 0.85; }
+
+.result-msg {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 10px;
+  min-height: 1.5em;
+}
+
+/* Matching exercise */
+.match-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  flex-wrap: wrap;
+}
+.match-word {
+  background: var(--purple-soft);
+  border-radius: 10px;
+  padding: 6px 14px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  min-width: 90px;
+  text-align: center;
+}
+.match-arrow { color: var(--fg-soft); }
+.match-select {
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  background: var(--surface);
+  color: var(--fg);
+  cursor: pointer;
+  min-width: 60px;
+}
+
+/* Word bank */
+.word-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 14px;
+  justify-content: center;
+}
+.word-chip {
+  background: var(--blue);
+  color: #fff;
+  padding: 4px 14px;
+  border-radius: 16px;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--fg-soft);
+  margin-top: 30px;
+  padding: 16px 0;
+  border-top: 1px solid var(--border);
+}
+
+/* Celebration */
+.celebration {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+.confetti {
+  position: absolute;
+  width: 10px; height: 10px;
+  border-radius: 2px;
+  animation: fall 2s ease-out forwards;
+}
+@keyframes fall {
+  0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <h1>Fun English Class!</h1>
+    <p>Learn, Play & Have Fun Together</p>
+    <div class="level-tag">Family and Friends Â· Level 2</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-topic="animals" onclick="switchTab('animals')">
+      <span class="tab-icon">ð¾</span> Animals
+    </button>
+    <button class="tab" data-topic="school" onclick="switchTab('school')">
+      <span class="tab-icon">ð</span> School
+    </button>
+    <button class="tab" data-topic="family" onclick="switchTab('family')">
+      <span class="tab-icon">ðª</span> Family
+    </button>
+    <button class="tab" data-topic="exercises" onclick="switchTab('exercises')">
+      <span class="tab-icon">ð</span> Exercises
+    </button>
+  </div>
+
+  <!-- ===== ANIMALS ===== -->
+  <div class="topic active" id="topic-animals">
+    <div class="section-title" style="color: var(--green);">ð¾ Animals</div>
+    <div class="section-sub">Tap a card to hear the word! Â· Nháº¥n vÃ o tháº» Äá» nghe!</div>
+
+    <div class="cards-grid" id="animals-cards"></div>
+
+    <div class="pattern-box">
+      <div class="pattern-label">Sentence Pattern Â· Máº«u cÃ¢u</div>
+      <div class="pattern-text">I can see a <span class="blank"></span> !</div>
+      <div class="pattern-example">"I can see a <strong>dog</strong>!" â TÃ´i cÃ³ thá» nhÃ¬n tháº¥y má»t con chÃ³!</div>
+    </div>
+
+    <div class="game-area" id="animal-game">
+      <h3>ð® Guess the Animal!</h3>
+      <div class="game-prompt" id="animal-game-prompt"></div>
+      <div class="game-question" id="animal-game-question"></div>
+      <div class="game-options" id="animal-game-options"></div>
+      <div class="game-score">Score: <span id="animal-score">0</span> / <span id="animal-total">0</span></div>
+    </div>
+  </div>
+
+  <!-- ===== SCHOOL ===== -->
+  <div class="topic" id="topic-school">
+    <div class="section-title" style="color: var(--purple);">ð School Things</div>
+    <div class="section-sub">Tap a card to hear the word! Â· Nháº¥n vÃ o tháº» Äá» nghe!</div>
+
+    <div class="cards-grid" id="school-cards"></div>
+
+    <div class="pattern-box">
+      <div class="pattern-label">Sentence Pattern Â· Máº«u cÃ¢u</div>
+      <div class="pattern-text">This is my <span class="blank"></span> .</div>
+      <div class="pattern-example">"This is my <strong>pencil</strong>." â ÄÃ¢y lÃ  bÃºt chÃ¬ cá»§a tÃ´i.</div>
+    </div>
+
+    <div class="game-area" id="school-game">
+      <h3>ð® What is it?</h3>
+      <div class="game-prompt" id="school-game-prompt"></div>
+      <div class="game-question" id="school-game-question"></div>
+      <div class="game-options" id="school-game-options"></div>
+      <div class="game-score">Score: <span id="school-score">0</span> / <span id="school-total">0</span></div>
+    </div>
+  </div>
+
+  <!-- ===== FAMILY & BODY ===== -->
+  <div class="topic" id="topic-family">
+    <div class="section-title" style="color: var(--orange);">ðª My Family & Body</div>
+    <div class="section-sub">Tap a card to hear the word! Â· Nháº¥n vÃ o tháº» Äá» nghe!</div>
+
+    <p style="font-family: var(--font-display); font-weight: 600; font-size: 0.9rem; color: var(--orange); margin: 0 0 8px;">ð¨âð©âð§âð¦ Family Members</p>
+    <div class="cards-grid" id="family-cards"></div>
+
+    <p style="font-family: var(--font-display); font-weight: 600; font-size: 0.9rem; color: var(--orange); margin: 12px 0 8px;">ð¦µ Body Parts</p>
+    <div class="cards-grid" id="body-cards"></div>
+
+    <div class="pattern-box">
+      <div class="pattern-label">Sentence Patterns Â· Máº«u cÃ¢u</div>
+      <div class="pattern-text" style="font-size: 1.1rem;">This is my <span class="blank" style="width:60px"></span> . Â· Touch your <span class="blank" style="width:60px"></span> !</div>
+      <div class="pattern-example">"This is my <strong>mum</strong>." Â· "Touch your <strong>head</strong>!"</div>
+    </div>
+
+    <div class="game-area" id="family-game">
+      <h3>ð® Who or What is it?</h3>
+      <div class="game-prompt" id="family-game-prompt"></div>
+      <div class="game-question" id="family-game-question"></div>
+      <div class="game-options" id="family-game-options"></div>
+      <div class="game-score">Score: <span id="family-score">0</span> / <span id="family-total">0</span></div>
+    </div>
+  </div>
+
+  <!-- ===== EXERCISES ===== -->
+  <div class="topic" id="topic-exercises">
+    <div class="section-title" style="color: var(--red);">ð Exercises</div>
+    <div class="section-sub">Test what you learned! Â· Kiá»m tra kiáº¿n thá»©c!</div>
+
+    <!-- Exercise A: Matching -->
+    <div class="exercise-block">
+      <h3>ð A. Match the word with the picture Â· Ná»i tá»« vá»i hÃ¬nh</h3>
+      <div id="match-exercise"></div>
+      <button class="check-btn" onclick="checkMatching()">Check Answers â</button>
+      <div class="result-msg" id="match-result"></div>
+    </div>
+
+    <!-- Exercise B: Fill in the blanks -->
+    <div class="exercise-block">
+      <h3>âï¸ B. Fill in the blanks Â· Äiá»n vÃ o chá» trá»ng</h3>
+      <div class="word-bank">
+        <span class="word-chip">book</span>
+        <span class="word-chip">bird</span>
+        <span class="word-chip">hands</span>
+        <span class="word-chip">sister</span>
+        <span class="word-chip">head</span>
+      </div>
+      <div id="fill-exercise"></div>
+      <button class="check-btn" onclick="checkFillIn()">Check Answers â</button>
+      <div class="result-msg" id="fill-result"></div>
+    </div>
+
+    <!-- Exercise C: Pick the right word -->
+    <div class="exercise-block">
+      <h3>â­ C. Pick the correct word Â· Chá»n tá»« ÄÃºng</h3>
+      <div id="pick-exercise"></div>
+      <div class="result-msg" id="pick-result"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Teacher Mark & Vu Nguyen Â· Fun English Class Â· Family and Friends Level 2
+  </div>
+</div>
+
+<div class="celebration" id="celebration"></div>
+
+<script>
+// ===== DATA =====
+const animalsData = [
+  { emoji: 'ð¶', word: 'dog', vn: 'con chÃ³', phonetic: '/dÉÉ¡/' },
+  { emoji: 'ð±', word: 'cat', vn: 'con mÃ¨o', phonetic: '/kÃ¦t/' },
+  { emoji: 'ð¦', word: 'bird', vn: 'con chim', phonetic: '/bÉËd/' },
+  { emoji: 'ð', word: 'fish', vn: 'con cÃ¡', phonetic: '/fÉªÊ/' },
+  { emoji: 'ð¸', word: 'frog', vn: 'con áº¿ch', phonetic: '/frÉÉ¡/' },
+  { emoji: 'ð', word: 'elephant', vn: 'con voi', phonetic: '/ËelÉªfÉnt/' }
+];
+
+const schoolData = [
+  { emoji: 'âï¸', word: 'pencil', vn: 'bÃºt chÃ¬', phonetic: '/Ëpensl/' },
+  { emoji: 'ðç¸', word: 'pen', vn: 'bÃºt má»±c', phonetic: '/pen/' },
+  { emoji: 'ð', word: 'ruler', vn: 'thÆ°á»c káº»', phonetic: '/ËruËlÉr/' },
+  { emoji: 'ð', word: 'book', vn: 'quyá»n sÃ¡ch', phonetic: '/bÊk/' },
+  { emoji: 'ð', word: 'bag', vn: 'cáº·p sÃ¡ch', phonetic: '/bÃ¦É¡/' },
+  { emoji: 'ð§½', word: 'rubber', vn: 'cá»¥c táº©y', phonetic: '/ËrÊbÉr/' }
+];
+
+const familyData = [
+  { emoji: 'ð©', word: 'mum', vn: 'máº¹', phonetic: '/mÊm/' },
+  { emoji: 'ð¨', word: 'dad', vn: 'bá»', phonetic: '/dÃ¦d/' },
+  { emoji: 'ð¦', word: 'brother', vn: 'anh/em trai', phonetic: '/ËbrÊÃ°Ér/' },
+  { emoji: 'ð§', word: 'sister', vn: 'chá»/em gÃ¡i', phonetic: '/ËsÉªstÉr/' }
+];
+
+const bodyData = [
+  { emoji: 'ð§ ', word: 'head', vn: 'Äáº§u', phonetic: '/hed/' },
+  { emoji: 'ðª', word: 'arms', vn: 'cÃ¡nh tay', phonetic: '/ÉËmz/' },
+  { emoji: 'ð¦µ', word: 'legs', vn: 'chÃ¢n', phonetic: '/leÉ¡z/' },
+  { emoji: 'ðï¸', word: 'hands', vn: 'bÃ n tay', phonetic: '/hÃ¦ndz/' },
+  { emoji: 'ð£', word: 'feet', vn: 'bÃ n chÃ¢n', phonetic: '/fiËt/' },
+  { emoji: 'ð', word: 'eyes', vn: 'máº­t', phonetic: '/aÉªz/' }
+];
+
+// ===== TTS =====
+function speak(word) {
+  if ('speechSynthesis' in window) {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(word);
+    u.lang = 'en-GB';
+    u.rate = 0.8;
+    u.pitch = 1.1;
+    speechSynthesis.speak(u);
+  }
+}
+
+// ===== FLASHCARD RENDERING =====
+function renderCards(containerId, data, colorClass) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = data.map(item => `
+    <div class="flash-card ${colorClass}" onclick="speak('${item.word}')">
+      <button class="audio-btn" onclick="event.stopPropagation(); speak('${item.word}')">ð</button>
+      <span class="card-emoji">${item.emoji}</span>
+      <span class="card-word">${item.word}</span>
+      <span class="card-vn">${item.vn}</span>
+      <span class="card-phonetic">${item.phonetic}</span>
+    </div>
+  `).join('');
+}
+
+// ===== TAB SWITCHING =====
+function switchTab(topic) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab[data-topic="${topic}"]`).classList.add('active');
+  document.querySelectorAll('.topic').forEach(t => t.classList.remove('active'));
+  document.getElementById(`topic-${topic}`).classList.add('active');
+}
+
+// ===== QUIZ GAME =====
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function createQuizGame(prefix, data) {
+  let questions = shuffle(data);
+  let idx = 0;
+  let score = 0;
+
+  function render() {
+    const promptEl = document.getElementById(`${prefix}-game-prompt`);
+    const questionEl = document.getElementById(`${prefix}-game-question`);
+    const optionsEl = document.getElementById(`${prefix}-game-options`);
+
+    if (idx >= questions.length) {
+      promptEl.textContent = 'ð';
+      questionEl.textContent = `Great job! ${score}/${questions.length} correct!`;
+      optionsEl.innerHTML = `<button class="restart-btn" onclick="games['${prefix}'].restart()">Play Again ð</button>`;
+      if (score === questions.length) celebrate();
+      return;
+    }
+
+    const q = questions[idx];
+    promptEl.textContent = q.emoji;
+    questionEl.textContent = 'What is this?';
+
+    const wrongOptions = shuffle(data.filter(d => d.word !== q.word)).slice(0, 2);
+    const options = shuffle([q, ...wrongOptions]);
+
+    optionsEl.innerHTML = options.map(o =>
+      `<button class="game-opt" onclick="games['${prefix}'].answer(this, '${o.word}', '${q.word}')">${o.word}</button>`
+    ).join('');
+
+    document.getElementById(`${prefix}-score`).textContent = score;
+    document.getElementById(`${prefix}-total`).textContent = idx;
+  }
+
+  function answer(btn, chosen, correct) {
+    const opts = btn.parentElement.querySelectorAll('.game-opt');
+    opts.forEach(o => o.style.pointerEvents = 'none');
+
+    if (chosen === correct) {
+      btn.classList.add('correct');
+      score++;
+      speak(correct);
+    } else {
+      btn.classList.add('wrong');
+      opts.forEach(o => { if (o.textContent === correct) o.classList.add('correct'); });
+    }
+
+    document.getElementById(`${prefix}-score`).textContent = score;
+    document.getElementById(`${prefix}-total`).textContent = idx + 1;
+
+    setTimeout(() => { idx++; render(); }, 1200);
+  }
+
+  function restart() {
+    questions = shuffle(data);
+    idx = 0;
+    score = 0;
+    render();
+  }
+
+  render();
+  return { answer, restart };
+}
+
+// ===== EXERCISES =====
+const matchData = [
+  { word: 'elephant', emoji: 'ð' },
+  { word: 'pencil', emoji: 'âï¸' },
+  { word: 'cat', emoji: 'ð±' },
+  { word: 'bag', emoji: 'ð' },
+  { word: 'mum', emoji: 'ð©' }
+];
+
+function renderMatchExercise() {
+  const emojis = shuffle(matchData.map(m => m.emoji));
+  const container = document.getElementById('match-exercise');
+  container.innerHTML = matchData.map((m, i) => `
+    <div class="match-row">
+      <div class="ex-num">${i + 1}</div>
+      <div class="match-word">${m.word}</div>
+      <span class="match-arrow">â</span>
+      <select class="match-select" data-answer="${m.emoji}" id="match-${i}">
+        <option value="">?</option>
+        ${emojis.map(e => `<option value="${e}">${e}</option>`).join('')}
+      </select>
+    </div>
+  `).join('');
+}
+
+function checkMatching() {
+  let correct = 0;
+  matchData.forEach((m, i) => {
+    const sel = document.getElementById(`match-${i}`);
+    if (sel.value === m.emoji) {
+      sel.style.borderColor = 'var(--green)';
+      correct++;
+    } else {
+      sel.style.borderColor = 'var(--red)';
+    }
+  });
+  document.getElementById('match-result').textContent =
+    correct === matchData.length ? 'â­ Perfect! Giá»i láº¯m!' : `${correct}/${matchData.length} correct. Try again!`;
+  if (correct === matchData.length) celebrate();
+}
+
+const fillData = [
+  { pre: 'I can see a', post: '. ð¦', answer: 'bird' },
+  { pre: 'This i3 my', post: '. ð', answer: 'book' },
+  { pre: 'Touch your', post: '! ð§ ', answer: 'head' },
+  { pre: 'This is my', post: '. ð§', answer: 'sister' },
+  { pre: 'Clap your', post: '! ðï¸', answer: 'hands' }
+];
+
+function renderFillExercise() {
+  const container = document.getElementById('fill-exercise');
+  container.innerHTML = fillData.map((f, i) => `
+    <div class="ex-item">
+      <div class="ex-num">${i + 1}</div>
+      <span class="ex-text">${f.pre}</span>
+      <input class="ex-input" type="text" id="fill-${i}" data-answer="${f.answer}" autocomplete="off" spellcheck="false">
+      <span class="ex-text">${f.post}</span>
+    </div>
+  `).join('');
+}
+
+function checkFillIn() {
+  let correct = 0;
+  fillData.forEach((f, i) => {
+    const input = document.getElementById(`fill-${i}`);
+    const val = input.value.trim().toLowerCase();
+    if (val === f.answer) {
+      input.classList.remove('wrong-input');
+      input.classList.add('correct-input');
+      correct++;
+    } else {
+      input.classList.remove('correct-input');
+      input.classList.add('wrong-input');
+    }
+  });
+  document.getElementById('fill-result').textContent =
+    correct === fillData.length ? 'â­ Perfect! Giá»i láº¯m!' : `${correct}/${fillData.length} correct. Try again!`;
+  if (correct === fillData.length) celebrate();
+}
+
+const pickData = [
+  { emoji: 'ð¸', options: ['fish', 'frog', 'bird'], answer: 'frog' },
+  { emoji: 'ð', options: ['rubber', 'pen', 'ruler'], answer: 'ruler' },
+  { emoji: 'ð¨', options: ['brother', 'dad', 'sister'], answer: 'dad' },
+  { emoji: 'ð¶', options: ['cat', 'frog', 'dog'], answer: 'dog' }
+];
+
+function renderPickExercise() {
+  const container = document.getElementById('pick-exercise');
+  container.innerHTML = pickData.map((p, i) => `
+    <div class="ex-item" id="pick-row-${i}">
+      <div class="ex-num">${i + 1}</div>
+      <span class="ex-emoji">${p.emoji}</span>
+      ${p.options.map(o => `
+        <button class="game-opt" style="font-size:0.85rem; padding:6px 14px;"
+          onclick="pickAnswer(${i}, this, '${o}', '${p.answer}')">${o}</button>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+let pickCorrect = 0;
+function pickAnswer(row, btn, chosen, answer) {
+  const rowEl = document.getElementById(`pick-row-${row}`);
+  const opts = rowEl.querySelectorAll('.game-opt');
+  opts.forEach(o => o.style.pointerEvents = 'none');
+  if (chosen === answer) {
+    btn.classList.add('correct');
+    pickCorrect++;
+    speak(answer);
+  } else {
+    btn.classList.add('wrong');
+    opts.forEach(o => { if (o.textContent === answer) o.classList.add('correct'); });
+  }
+  if (pickCorrect === pickData.length) {
+    setTimeout(() => {
+      document.getElementById('pick-result').textContent = 'â­ Perfect! Giá»i láº¯m!';
+      celebrate();
+    }, 500);
+  }
+}
+
+// ===== CELEBRATION =====
+function celebrate() {
+  const el = document.getElementById('celebration');
+  const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff6b9d', '#c084fc'];
+  let html = '';
+  for (let i = 0; i < 40; i++) {
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const left = Math.random() * 100;
+    const delay = Math.random() * 0.8;
+    const size = 6 + Math.random() * 8;
+    html += `<div class="confetti" style="left:${left}%;background:${color};width:${size}px;height:${size}px;animation-delay:${delay}s;"></div>`;
+  }
+  el.innerHTML = html;
+  setTimeout(() => { el.innerHTML = ''; }, 2500);
+}
+
+// ===== INIT =====
+const games = {};
+function init() {
+  renderCards('animals-cards', animalsData, 'green-border');
+  renderCards('school-cards', schoolData, 'purple-border');
+  renderCards('family-cards', familyData, 'orange-border');
+  renderCards('body-cards', bodyData, 'orange-border');
+
+  games['animal'] = createQuizGame('animal', animalsData);
+  games['school'] = createQuizGame('school', schoolData);
+  games['family'] = createQuizGame('family', [...familyData, ...bodyData]);
+
+  renderMatchExercise();
+  renderFillExercise();
+  renderPickExercise();
+}
+
+init();
+</script>
+</body>
+</html>
