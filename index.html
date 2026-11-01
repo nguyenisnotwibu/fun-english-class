@@ -680,30 +680,27 @@ const bodyData = [
 ];
 
 // ===== TTS =====
-let ttsUnlocked = false;
-function unlockTTS() {
-  if (ttsUnlocked || !('speechSynthesis' in window)) return;
-  const warm = new SpeechSynthesisUtterance('');
-  warm.volume = 0;
-  speechSynthesis.speak(warm);
-  ttsUnlocked = true;
+let cachedVoice = null;
+function loadVoices() {
+  const voices = speechSynthesis.getVoices();
+  if (voices.length) {
+    cachedVoice = voices.find(v => v.lang === 'en-GB') || voices.find(v => v.lang.startsWith('en-GB')) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+  }
 }
-document.addEventListener('touchstart', unlockTTS, { once: true });
-document.addEventListener('click', unlockTTS, { once: true });
+if ('speechSynthesis' in window) {
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
 
 function speak(word) {
   if (!('speechSynthesis' in window)) return;
-  speechSynthesis.cancel();
-  setTimeout(() => {
-    const u = new SpeechSynthesisUtterance(word);
-    u.lang = 'en-GB';
-    u.rate = 0.8;
-    u.pitch = 1.1;
-    const voices = speechSynthesis.getVoices();
-    const enVoice = voices.find(v => v.lang.startsWith('en-GB')) || voices.find(v => v.lang.startsWith('en'));
-    if (enVoice) u.voice = enVoice;
-    speechSynthesis.speak(u);
-  }, 50);
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(word);
+  u.lang = 'en-GB';
+  u.rate = 0.8;
+  u.pitch = 1.1;
+  if (cachedVoice) u.voice = cachedVoice;
+  window.speechSynthesis.speak(u);
 }
 
 // ===== FLASHCARD RENDERING =====
